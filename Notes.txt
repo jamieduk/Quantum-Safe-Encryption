@@ -1,0 +1,109 @@
+https://github.com/jamieduk/Quantum-Safe-Encryption
+
+By Jay Mee @ J~Net (c) 2024
+
+
+Setup
+
+python -m venv venv
+source venv/bin/activate
+cd quantum_safe
+pip install .
+pip list
+cd ..
+python test_quantum_safe.py
+pip install --upgrade pip
+
+pip uninstall Crypto -y # < if installed!
+pip install pycryptodome
+
+
+Test 
+
+python test_quantum_safe.py
+
+Instructions
+
+How to Use These Scripts
+
+Encrypt a File or String:
+
+To encrypt a file or string, run encrypt.py like this:
+
+python encrypt.py input_file.txt encrypted_output.txt
+
+
+input_file.txt: The input file or string you want to encrypt.
+encrypted_output.txt: The output file where the encrypted data and public key will be saved.
+
+Decrypt the Encrypted Data:
+
+To decrypt the data, you need the private_key.pem (RSA private key file) and the encrypted file from the encryption step.
+
+python decrypt.py encrypted_output.txt plaintext.txt
+
+
+
+
+encrypted_output.txt: The file that contains the encrypted data and the public key.
+
+private_key.pem: The RSA private key for decryption.
+decrypted_output.txt: The file where the decrypted message will be saved.
+
+Notes:
+
+Ensure the private key is stored in a PEM file (private_key.pem).
+The scripts support encrypting both files and raw strings.
+
+Key Pair Usage:
+
+RSA Key Pair:
+
+Public Key: This key is used to encrypt the AES key (symmetric key). The AES key is used for the encryption of the actual data (message). The public key is typically shared with others to allow them to encrypt data that only the holder of the private key can decrypt.
+Private Key: This key is used to decrypt the AES key. Once the AES key is decrypted using the private key, it is then used to decrypt the encrypted message.
+
+How It Works:
+Encryption:
+A random AES key (128-bit) is generated to encrypt the data using the AES algorithm.
+
+The RSA public key is used to encrypt this AES key.
+The AES-encrypted data, along with the RSA-encrypted AES key and the AES initialization vector (IV), are concatenated together to form the complete encrypted message.
+
+Decryption:
+
+The RSA private key is used to decrypt the RSA-encrypted AES key.
+The AES key is then used to decrypt the actual message using the AES algorithm with the previously used IV.
+
+The decrypted message is the original data that was encrypted.
+
+Example Workflow:
+Encryption Process:
+RSA Key Pair Generation:
+Generate a public/private RSA key pair.
+AES Key Generation:
+Generate a random 128-bit AES key.
+Encrypt Data with AES:
+The message is encrypted using the AES key and an IV.
+Encrypt AES Key with RSA:
+The AES key is then encrypted with the RSA public key.
+
+Combine:
+The encrypted AES key, IV, and encrypted message are combined into a single payload.
+
+Decryption Process:
+Decrypt AES Key:
+The RSA private key is used to decrypt the AES key.
+Decrypt Message with AES:
+The decrypted AES key is used to decrypt the encrypted message.
+
+The encryption and decryption processes in the provided encrypt.py and decrypt.py scripts use RSA key pairs (public and private keys) for encrypting the AES key, and then AES is used to encrypt and decrypt the actual message. The RSA key pair is essential for securely exchanging the AES key, ensuring that only the holder of the private key can decrypt the AES key and then decrypt the actual message.
+
+
+Summary of Changes for Quantum-Safe Improvements:
+Increase AES key size to 256 bits (AES-256).
+Use a stronger RSA key size, e.g., RSA-4096 or RSA-8192, as a temporary measure.
+Add HMAC to provide message integrity.
+Use a stronger key derivation function like PBKDF2, scrypt, or Argon2.
+Ensure unique IV generation for each encryption operation.
+Plan for post-quantum cryptography algorithms in the future when they become standardized.
+
